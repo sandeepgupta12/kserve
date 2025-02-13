@@ -88,5 +88,5 @@ jobs:
           platforms: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
           context: .
           file: router.Dockerfile
-          push: true
+          push: false
           tags: ${{ env.IMAGE_ID }}:${{ env.VERSION }}
