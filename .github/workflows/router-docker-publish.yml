@@ -25,7 +25,6 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
     runs-on: ubuntu-22.04
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
