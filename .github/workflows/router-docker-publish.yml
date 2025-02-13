@@ -24,7 +24,7 @@ jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout source
@@ -45,7 +45,7 @@ jobs:
     # Ensure test job passes before pushing image.
     needs: test
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event_name == 'push'
 
     steps:
