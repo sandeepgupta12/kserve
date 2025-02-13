@@ -98,7 +98,7 @@ jobs:
           platforms: linux/amd64
           context: python
           file: python/huggingface_server.Dockerfile
-          push: true
+          push: false
           tags: ${{ env.IMAGE_ID }}:${{ env.VERSION }}
           # https://github.com/docker/buildx/issues/1533
           provenance: false
