@@ -39,21 +39,24 @@ jobs:
       #   with:
       #     cache-image: true
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-          install: true
+      # - name: Setup Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
+      #   with:
+      #     driver: docker
+      #     install: true
 
       - name: Run tests
-        uses: docker/build-push-action@v5
-        with:
-          platforms: linux/ppc64le
-          context: python
-          file: python/artexplainer.Dockerfile
-          push: false
-          # https://github.com/docker/buildx/issues/1533
-          provenance: false
+        run: |
+          docker build -f python/artexplainer.Dockerfile python
+      # - name: Run tests
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     platforms: linux/ppc64le
+      #     context: python
+      #     file: python/artexplainer.Dockerfile
+      #     push: false
+      #     # https://github.com/docker/buildx/issues/1533
+      #     provenance: false
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
