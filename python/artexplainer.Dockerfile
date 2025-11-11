@@ -3,7 +3,7 @@ ARG BASE_IMAGE=python:${PYTHON_VERSION}-slim-bookworm
 ARG VENV_PATH=/prod_venv
 
 FROM ${BASE_IMAGE} AS builder
-ARG GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=0
+ARG GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
 
 # Required for building packages for arm64 arch
 # RUN apt-get update && apt-get install -y --no-install-recommends curl python3-dev build-essential && apt-get clean && \
