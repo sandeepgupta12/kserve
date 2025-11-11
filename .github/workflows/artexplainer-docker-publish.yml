@@ -47,7 +47,8 @@ jobs:
 
       - name: Run tests
         run: |
-          docker build -f python/artexplainer.Dockerfile python
+          export DOCKER_BUILDKIT=0
+          docker build -t art-explainer:test -f python/artexplainer.Dockerfile python
       # - name: Run tests
       #   uses: docker/build-push-action@v5
       #   with:
