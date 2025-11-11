@@ -26,7 +26,7 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
   test:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 720  # ⏱️ allows up to 12 hours (default is 360 minutes)
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
