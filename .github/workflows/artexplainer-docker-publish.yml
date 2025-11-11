@@ -45,10 +45,14 @@ jobs:
       #     driver: docker
       #     install: true
 
+      - name: Fix cgroup permissions (ppc64le)
+        run: |
+          sudo mount -t cgroup2 none /sys/fs/cgroup || true
+          sudo chmod 755 /sys/fs/cgroup || true
       - name: Run tests
         run: |
           export DOCKER_BUILDKIT=0
-          sudo docker build -t art-explainer:test -f python/artexplainer.Dockerfile python
+          docker build -t art-explainer:test -f python/artexplainer.Dockerfile python
       # - name: Run tests
       #   uses: docker/build-push-action@v5
       #   with:
