@@ -24,7 +24,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
 # Setup virtual environment
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
-RUN uv venv $VIRTUAL_ENV
+RUN uv venv $VIRTUAL_ENV && \
+    $VIRTUAL_ENV/bin/python -m ensurepip && \
+    $VIRTUAL_ENV/bin/pip install --upgrade pip setuptools wheel
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 
