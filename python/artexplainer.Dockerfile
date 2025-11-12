@@ -26,15 +26,15 @@ ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
 RUN uv venv $VIRTUAL_ENV && \
     $VIRTUAL_ENV/bin/python -m ensurepip && \
-    $VIRTUAL_ENV/bin/pip install --upgrade pip setuptools wheel
+    $VIRTUAL_ENV/bin/python -m pip install --upgrade pip setuptools wheel
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # Preinstall core dependencies using prebuilt IBM wheels
-RUN which pip && python -m site
-RUN $VIRTUAL_ENV/bin/pip install --prefer-binary \
+#RUN which pip && python -m site
+RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
       numpy==2.2.5 grpcio==1.71.0 pandas==2.2.3 \
       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
