@@ -61,6 +61,8 @@ jobs:
           push: false
           # https://github.com/docker/buildx/issues/1533
           provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
