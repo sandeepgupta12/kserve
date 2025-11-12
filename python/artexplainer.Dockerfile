@@ -31,7 +31,7 @@ ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # Preinstall core dependencies using prebuilt IBM wheels
-RUN pip install --prefer-binary \
+RUN uv pip install install --prefer-binary \
       numpy==2.2.5 grpcio==1.71.0 pandas==2.2.3 \
       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
