@@ -35,7 +35,9 @@ RUN pip install --prefer-binary \
       numpy==2.2.5 grpcio==1.71.0 pandas==2.2.3 \
       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
-RUN cd kserve && uv sync --active
+# Configure uv to reuse binaries and same index
+ENV UV_EXTRA_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux
+RUN cd kserve && uv sync --active --no-reinstall
 
 COPY kserve kserve
 RUN cd kserve && uv sync --active
