@@ -34,12 +34,13 @@ ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # Preinstall core dependencies using prebuilt IBM wheels
 #RUN which pip && python -m site
-RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
-      numpy==2.2.5 pandas==2.2.3 \
-      --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
+# RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
+#       numpy==2.2.5 pandas==2.2.3 \
+#       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
 # Configure uv to reuse binaries and same index
-#ENV UV_EXTRA_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux
+ENV UV_EXTRA_INDEX_URL="https://pypi.org/simple https://wheels.developerfirst.ibm.com/ppc64le/linux"
+ENV UV_INDEX_STRATEGY=unsafe-best-match
 RUN cd kserve && uv sync --active --no-reinstall
 
 COPY kserve kserve
