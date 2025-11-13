@@ -32,6 +32,12 @@ ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
+
+# 🔍 Inspect lock file before syncing (diagnostic only)
+RUN echo "===== kserve/uv.lock content =====" && \
+    head -n 30 kserve/uv.lock || echo "No uv.lock found" && \
+    echo "==================================="
+    
 # Preinstall core dependencies using prebuilt IBM wheels
 RUN which pip && python -m site
 RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
