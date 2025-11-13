@@ -41,7 +41,8 @@ RUN echo "===== kserve/uv.lock content =====" && \
 # Preinstall core dependencies using prebuilt IBM wheels
 RUN which pip && python -m site
 RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
-      numpy==2.2.5 pandas==2.2.3 grpcio==1.71.0 \
+      numpy==2.2.5 pandas==2.2.3 grpcio==1.71.0 pyyaml==6.0.2 httptools==0.6.4 \
+      psutil==5.9.8 \
       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
 # Configure uv to reuse binaries and same index
@@ -54,6 +55,10 @@ RUN cd kserve && uv sync --active --no-reinstall --frozen
 
 # ------------------ artexplainer deps ------------------
 COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
+RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
+      ml-dtypes==0.5.1 h5py==3.10.0 scikit-learn==1.6.1 pillow==10.4.0 scipy==1.15.2 \
+      --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
+
 RUN cd artexplainer && uv sync --active --no-reinstall --frozen
 
 COPY artexplainer artexplainer
