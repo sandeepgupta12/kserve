@@ -33,25 +33,25 @@ ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=${GRPC_PYTHON_BUILD_SYSTEM_OPENSSL}
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # Preinstall core dependencies using prebuilt IBM wheels
-#RUN which pip && python -m site
-# RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
-#       numpy==2.2.5 pandas==2.2.3 \
-#       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
+RUN which pip && python -m site
+RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
+      numpy==2.2.5 pandas==2.2.3 grpcio==1.71.0 \
+      --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
 # Configure uv to reuse binaries and same index
 ENV UV_EXTRA_INDEX_URL="https://pypi.org/simple https://wheels.developerfirst.ibm.com/ppc64le/linux"
 ENV UV_INDEX_STRATEGY=unsafe-best-match
-RUN cd kserve && uv sync --active --no-reinstall
+RUN cd kserve && uv sync --active --no-reinstall --frozen
 
 COPY kserve kserve
-RUN cd kserve && uv sync --active
+RUN cd kserve && uv sync --active --no-reinstall --frozen
 
 # ------------------ artexplainer deps ------------------
 COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
-RUN cd artexplainer && uv sync --active --no-cache
+RUN cd artexplainer && uv sync --active --no-reinstall --frozen
 
 COPY artexplainer artexplainer
-RUN cd artexplainer && uv sync --active --no-cache
+RUN cd artexplainer && uv sync --active --no-reinstall --frozen
 
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml
