@@ -59,7 +59,7 @@ RUN uv venv $VIRTUAL_ENV && \
     $VIRTUAL_ENV/bin/python -m ensurepip && \
     $VIRTUAL_ENV/bin/python -m pip install --upgrade pip setuptools wheel
 RUN $VIRTUAL_ENV/bin/python -m pip install --prefer-binary \
-      ml-dtypes==0.5.1 h5py==3.10.0 scikit-learn==1.6.1 pillow==10.4.0 scipy==1.15.2 \
+      ml-dtypes==0.5.1 scikit-learn==1.6.1 pillow==10.4.0 scipy==1.15.2 \
       --extra-index-url=https://wheels.developerfirst.ibm.com/ppc64le/linux
 
 RUN cd artexplainer && uv sync --active --no-reinstall --frozen
