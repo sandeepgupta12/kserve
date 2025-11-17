@@ -22,47 +22,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  # test:
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 720  # ⏱️ allows up to 12 hours (default is 360 minutes)
-  #   steps:
-  #     - name: Checkout source
-  #       uses: actions/checkout@v4
+  #Run tests.
+  #See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 720  # ⏱️ allows up to 12 hours (default is 360 minutes)
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
       
-  #     - name: Free-up disk space
-  #       uses: ./.github/actions/free-up-disk-space
+      - name: Free-up disk space
+        uses: ./.github/actions/free-up-disk-space
 
-  #     - name: Setup QEMU
-  #       uses: docker/setup-qemu-action@v3
-  #       with:
-  #         cache-image: true
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          cache-image: true
 
-  #     - name: Setup Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #       with:
-  #         cache-binary: true
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          cache-binary: true
 
-  #     # - name: Fix cgroup permissions (ppc64le)
-  #     #   run: |
-  #     #     sudo mount -t cgroup2 none /sys/fs/cgroup || true
-  #     #     sudo chmod 755 /sys/fs/cgroup || true
-  #     # - name: Run tests
-  #     #   run: |
-  #     #     export DOCKER_BUILDKIT=0
-  #     #     docker build -t art-explainer:test -f python/artexplainer.Dockerfile python
-  #     - name: Run tests
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         platforms: linux/ppc64le
-  #         context: python
-  #         file: python/artexplainer.Dockerfile
-  #         push: false
-  #         # https://github.com/docker/buildx/issues/1533
-  #         provenance: false
-  #         cache-from: type=gha
-  #         cache-to: type=gha,mode=max
+    
+      - name: Run tests
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64/v8,linux/ppc64le
+          context: python
+          file: python/artexplainer.Dockerfile
+          push: false
+          # https://github.com/docker/buildx/issues/1533
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -116,7 +109,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/ppc64le
+          platforms: linux/amd64,linux/arm64/v8,linux/ppc64le
           context: python
           file: python/artexplainer.Dockerfile
           push: true
@@ -124,5 +117,3 @@ jobs:
           # https://github.com/docker/buildx/issues/1533
           provenance: false
           sbom: true
-          build-args: |
-            GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
