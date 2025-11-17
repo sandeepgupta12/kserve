@@ -124,3 +124,5 @@ jobs:
           # https://github.com/docker/buildx/issues/1533
           provenance: false
           sbom: true
+          build-args: |
+            GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=1
