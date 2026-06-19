@@ -45,17 +45,33 @@ COPY storage/pyproject.toml storage/uv.lock storage/
 
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
-RUN cd kserve && uv sync --active --no-cache
+RUN cd kserve && \
+    uv sync --active --no-cache \
+    --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+    --extra-index-url https://pypi.org/simple \
+    --index-strategy unsafe-best-match
 
 COPY kserve kserve
-RUN cd kserve && uv sync --active --no-cache
+RUN cd kserve && \
+    uv sync --active --no-cache \
+    --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+    --extra-index-url https://pypi.org/simple \
+    --index-strategy unsafe-best-match
 
 # ------------------ artexplainer deps ------------------
 COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
-RUN cd artexplainer && uv sync --active --no-cache
+RUN cd artexplainer && \
+    uv sync --active --no-cache \
+    --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+    --extra-index-url https://pypi.org/simple \
+    --index-strategy unsafe-best-match
 
 COPY artexplainer artexplainer
-RUN cd artexplainer && uv sync --active --no-cache
+RUN cd artexplainer && \
+    uv sync --active --no-cache \
+    --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+    --extra-index-url https://pypi.org/simple \
+    --index-strategy unsafe-best-match
 
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml
