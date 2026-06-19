@@ -21,20 +21,21 @@ RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install ppc64le-specific wheels from IBM Power index before running uv sync
-# This ensures Power-optimized wheels are available in the environment
+# Use exact versions from uv.lock and force binary-only installation
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
     uv pip install \
         --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
         --extra-index-url https://pypi.org/simple \
+        --only-binary :all: \
         --no-deps \
-        "grpcio>=1.64.1" \
-        "grpcio-tools>=1.64.1" \
-        "numpy>=1.26.0" \
-        "pandas>=2.2.0" \
-        "psutil>=5.9.6" \
-        "pyyaml>=6.0.0" \
-        "httptools>=0.6.0" \
-        "uvloop>=0.21.0"; \
+        grpcio==1.74.0 \
+        grpcio-tools==1.74.0 \
+        numpy==2.2.4 \
+        pandas==2.2.3 \
+        psutil==5.9.8 \
+        pyyaml==6.0.2 \
+        httptools==0.6.4 \
+        uvloop==0.21.0; \
     fi
 
 # Copy storage metadata for editable dependency resolution
