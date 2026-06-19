@@ -21,16 +21,16 @@ RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Configure uv to use IBM Power index for ppc64le builds
-# Set environment variables to prefer Power index globally
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-    echo 'UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux' >> /etc/environment && \
-    echo 'UV_EXTRA_INDEX_URL=https://pypi.org/simple' >> /etc/environment && \
-    echo 'UV_INDEX_STRATEGY=unsafe-best-match' >> /etc/environment; \
+    echo 'export UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux' >> ~/.bashrc && \
+    echo 'export UV_EXTRA_INDEX_URL=https://pypi.org/simple' >> ~/.bashrc && \
+    echo 'export UV_INDEX_STRATEGY=unsafe-best-match' >> ~/.bashrc; \
     fi
 
-ENV UV_INDEX_URL=${UV_INDEX_URL:-}
-ENV UV_EXTRA_INDEX_URL=${UV_EXTRA_INDEX_URL:-}
-ENV UV_INDEX_STRATEGY=${UV_INDEX_STRATEGY:-}
+# Set environment variables for ppc64le
+ENV UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux
+ENV UV_EXTRA_INDEX_URL=https://pypi.org/simple
+ENV UV_INDEX_STRATEGY=unsafe-best-match
 
 # Copy storage metadata for editable dependency resolution
 COPY storage/pyproject.toml storage/uv.lock storage/
