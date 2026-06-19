@@ -22,10 +22,12 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install ppc64le-specific wheels from IBM Power index before running uv sync
 # Use exact versions from uv.lock and force binary-only installation
+# Use unsafe-best-match to search all indexes for the best version
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
     uv pip install \
         --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
         --extra-index-url https://pypi.org/simple \
+        --index-strategy unsafe-best-match \
         --only-binary :all: \
         --no-deps \
         grpcio==1.74.0 \
