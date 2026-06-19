@@ -26,14 +26,20 @@ COPY storage/pyproject.toml storage/uv.lock storage/
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd kserve && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+        cd kserve && uv sync --active --no-cache \
+            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index https://pypi.org/simple \
+            --index-strategy unsafe-best-match; \
     else \
         cd kserve && uv sync --active --no-cache; \
     fi
 
 COPY kserve kserve
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd kserve && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+        cd kserve && uv sync --active --no-cache \
+            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index https://pypi.org/simple \
+            --index-strategy unsafe-best-match; \
     else \
         cd kserve && uv sync --active --no-cache; \
     fi
@@ -41,14 +47,20 @@ RUN if [ "$(uname -m)" = "ppc64le" ]; then \
 # ------------------ artexplainer deps ------------------
 COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd artexplainer && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+        cd artexplainer && uv sync --active --no-cache \
+            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index https://pypi.org/simple \
+            --index-strategy unsafe-best-match; \
     else \
         cd artexplainer && uv sync --active --no-cache; \
     fi
 
 COPY artexplainer artexplainer
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd artexplainer && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+        cd artexplainer && uv sync --active --no-cache \
+            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index https://pypi.org/simple \
+            --index-strategy unsafe-best-match; \
     else \
         cd artexplainer && uv sync --active --no-cache; \
     fi
