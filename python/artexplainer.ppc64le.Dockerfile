@@ -20,22 +20,13 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Configure uv to use IBM Power wheel index for ppc64le
-RUN mkdir -p /root/.config/uv && \
-    echo '[index]' > /root/.config/uv/uv.toml && \
-    echo '[[index]]' >> /root/.config/uv/uv.toml && \
-    echo 'name = "ppc64le-wheels"' >> /root/.config/uv/uv.toml && \
-    echo 'url = "https://wheels.developerfirst.ibm.com/ppc64le/linux"' >> /root/.config/uv/uv.toml && \
-    echo 'default = true' >> /root/.config/uv/uv.toml && \
-    echo '' >> /root/.config/uv/uv.toml && \
-    echo '[[index]]' >> /root/.config/uv/uv.toml && \
-    echo 'name = "pypi"' >> /root/.config/uv/uv.toml && \
-    echo 'url = "https://pypi.org/simple"' >> /root/.config/uv/uv.toml
-
-# Install ppc64le-specific wheels from IBM Power index
+# Install ppc64le-specific wheels from IBM Power index before running uv sync
+# This ensures Power-optimized wheels are available in the environment
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-    uv pip install --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+    uv pip install \
+        --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
         --extra-index-url https://pypi.org/simple \
+        --no-deps \
         "grpcio>=1.64.1" \
         "grpcio-tools>=1.64.1" \
         "numpy>=1.26.0" \
