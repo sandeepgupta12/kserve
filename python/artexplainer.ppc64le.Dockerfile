@@ -20,28 +20,38 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Create uv configuration file for ppc64le to use IBM Power index
-RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-    mkdir -p /root/.config/uv && \
-    printf '[pip]\nindex-url = "https://wheels.developerfirst.ibm.com/ppc64le/linux"\nextra-index-url = ["https://pypi.org/simple"]\nindex-strategy = "unsafe-best-match"\n' > /root/.config/uv/uv.toml; \
-    fi
-
 # Copy storage metadata for editable dependency resolution
 COPY storage/pyproject.toml storage/uv.lock storage/
 
 # ------------------ kserve deps ------------------
 COPY kserve/pyproject.toml kserve/uv.lock kserve/
-RUN cd kserve && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd kserve && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+    else \
+        cd kserve && uv sync --active --no-cache; \
+    fi
 
 COPY kserve kserve
-RUN cd kserve && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd kserve && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+    else \
+        cd kserve && uv sync --active --no-cache; \
+    fi
 
 # ------------------ artexplainer deps ------------------
 COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
-RUN cd artexplainer && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd artexplainer && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+    else \
+        cd artexplainer && uv sync --active --no-cache; \
+    fi
 
 COPY artexplainer artexplainer
-RUN cd artexplainer && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd artexplainer && UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux UV_EXTRA_INDEX_URL=https://pypi.org/simple UV_INDEX_STRATEGY=unsafe-best-match uv sync --active --no-cache; \
+    else \
+        cd artexplainer && uv sync --active --no-cache; \
+    fi
 
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml
