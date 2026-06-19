@@ -20,17 +20,11 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Configure uv to use IBM Power index for ppc64le builds
+# Create uv configuration file for ppc64le to use IBM Power index
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-    echo 'export UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux' >> ~/.bashrc && \
-    echo 'export UV_EXTRA_INDEX_URL=https://pypi.org/simple' >> ~/.bashrc && \
-    echo 'export UV_INDEX_STRATEGY=unsafe-best-match' >> ~/.bashrc; \
+    mkdir -p /root/.config/uv && \
+    printf '[pip]\nindex-url = "https://wheels.developerfirst.ibm.com/ppc64le/linux"\nextra-index-url = ["https://pypi.org/simple"]\nindex-strategy = "unsafe-best-match"\n' > /root/.config/uv/uv.toml; \
     fi
-
-# Set environment variables for ppc64le
-ENV UV_INDEX_URL=https://wheels.developerfirst.ibm.com/ppc64le/linux
-ENV UV_EXTRA_INDEX_URL=https://pypi.org/simple
-ENV UV_INDEX_STRATEGY=unsafe-best-match
 
 # Copy storage metadata for editable dependency resolution
 COPY storage/pyproject.toml storage/uv.lock storage/
