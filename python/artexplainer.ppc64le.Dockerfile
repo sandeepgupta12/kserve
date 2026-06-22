@@ -21,48 +21,36 @@ RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Copy storage metadata for editable dependency resolution
-COPY storage/pyproject.toml storage/uv.lock storage/
+COPY storage/pyproject.toml storage/
 
 # ------------------ kserve deps ------------------
-COPY kserve/pyproject.toml kserve/uv.lock kserve/
-RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd kserve && uv sync --active --no-cache \
-            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --index https://pypi.org/simple \
-            --index-strategy unsafe-best-match; \
-    else \
-        cd kserve && uv sync --active --no-cache; \
-    fi
-
+COPY kserve/pyproject.toml kserve/
 COPY kserve kserve
+
+# Install kserve dependencies using pip install for better index control
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd kserve && uv sync --active --no-cache \
-            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --index https://pypi.org/simple \
-            --index-strategy unsafe-best-match; \
+        cd kserve && uv pip install --no-cache \
+            --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --extra-index-url https://pypi.org/simple \
+            --index-strategy unsafe-best-match \
+            -e .; \
     else \
-        cd kserve && uv sync --active --no-cache; \
+        cd kserve && uv pip install --no-cache -e .; \
     fi
 
 # ------------------ artexplainer deps ------------------
-COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
-RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd artexplainer && uv sync --active --no-cache \
-            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --index https://pypi.org/simple \
-            --index-strategy unsafe-best-match; \
-    else \
-        cd artexplainer && uv sync --active --no-cache; \
-    fi
-
+COPY artexplainer/pyproject.toml artexplainer/
 COPY artexplainer artexplainer
+
+# Install artexplainer dependencies using pip install for better index control
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd artexplainer && uv sync --active --no-cache \
-            --index https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --index https://pypi.org/simple \
-            --index-strategy unsafe-best-match; \
+        cd artexplainer && uv pip install --no-cache \
+            --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --extra-index-url https://pypi.org/simple \
+            --index-strategy unsafe-best-match \
+            -e .; \
     else \
-        cd artexplainer && uv sync --active --no-cache; \
+        cd artexplainer && uv pip install --no-cache -e .; \
     fi
 
 # Generate third-party licenses
