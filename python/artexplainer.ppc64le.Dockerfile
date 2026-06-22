@@ -21,38 +21,47 @@ RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Copy storage metadata for editable dependency resolution
-COPY storage/pyproject.toml storage/
+COPY storage/pyproject.toml storage/uv.lock storage/
 
 # ------------------ kserve deps ------------------
-COPY kserve/pyproject.toml kserve/
-COPY kserve kserve
+COPY kserve/pyproject.toml kserve/uv.lock kserve/
 
-# Install kserve dependencies using pip install for better index control
+# For ppc64le: Configure uv to check devpi first, then PyPI
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd kserve && uv pip install --no-cache \
-            --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --extra-index-url https://pypi.org/simple \
-            --index-strategy unsafe-best-match \
-            --only-binary grpcio,grpcio-tools,numpy,pandas,psutil,pyyaml,httptools,uvloop \
-            -e .; \
+        cd kserve && uv sync --active --no-cache \
+            --find-links https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index-url https://pypi.org/simple; \
     else \
-        cd kserve && uv pip install --no-cache -e .; \
+        cd kserve && uv sync --active --no-cache; \
+    fi
+
+COPY kserve kserve
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd kserve && uv sync --active --no-cache \
+            --find-links https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index-url https://pypi.org/simple; \
+    else \
+        cd kserve && uv sync --active --no-cache; \
     fi
 
 # ------------------ artexplainer deps ------------------
-COPY artexplainer/pyproject.toml artexplainer/
-COPY artexplainer artexplainer
+COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
 
-# Install artexplainer dependencies using pip install for better index control
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
-        cd artexplainer && uv pip install --no-cache \
-            --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
-            --extra-index-url https://pypi.org/simple \
-            --index-strategy unsafe-best-match \
-            --only-binary grpcio,grpcio-tools,numpy,pandas,psutil,pyyaml,httptools,uvloop \
-            -e .; \
+        cd artexplainer && uv sync --active --no-cache \
+            --find-links https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index-url https://pypi.org/simple; \
     else \
-        cd artexplainer && uv pip install --no-cache -e .; \
+        cd artexplainer && uv sync --active --no-cache; \
+    fi
+
+COPY artexplainer artexplainer
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd artexplainer && uv sync --active --no-cache \
+            --find-links https://wheels.developerfirst.ibm.com/ppc64le/linux \
+            --index-url https://pypi.org/simple; \
+    else \
+        cd artexplainer && uv sync --active --no-cache; \
     fi
 
 # Generate third-party licenses
