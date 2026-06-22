@@ -33,6 +33,7 @@ RUN if [ "$(uname -m)" = "ppc64le" ]; then \
             --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
             --extra-index-url https://pypi.org/simple \
             --index-strategy unsafe-best-match \
+            --only-binary grpcio,grpcio-tools,numpy,pandas,psutil,pyyaml,httptools,uvloop \
             -e .; \
     else \
         cd kserve && uv pip install --no-cache -e .; \
@@ -48,6 +49,7 @@ RUN if [ "$(uname -m)" = "ppc64le" ]; then \
             --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
             --extra-index-url https://pypi.org/simple \
             --index-strategy unsafe-best-match \
+            --only-binary grpcio,grpcio-tools,numpy,pandas,psutil,pyyaml,httptools,uvloop \
             -e .; \
     else \
         cd artexplainer && uv pip install --no-cache -e .; \
