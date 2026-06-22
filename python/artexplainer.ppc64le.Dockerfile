@@ -46,17 +46,34 @@ RUN if [ "$(uname -m)" = "ppc64le" ]; then \
 
 # ------------------ kserve deps ------------------
 # uv sync will skip already-installed packages from devpi
-RUN cd kserve && uv sync --active --no-cache
+# Use --no-install-project to avoid reinstalling packages, only sync dependencies
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd kserve && uv sync --active --no-cache --no-install-project; \
+    else \
+        cd kserve && uv sync --active --no-cache; \
+    fi
 
 COPY kserve kserve
-RUN cd kserve && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd kserve && uv pip install --no-cache -e .; \
+    else \
+        cd kserve && uv sync --active --no-cache; \
+    fi
 
 # ------------------ artexplainer deps ------------------
 # uv sync will skip already-installed packages from devpi
-RUN cd artexplainer && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd artexplainer && uv sync --active --no-cache --no-install-project; \
+    else \
+        cd artexplainer && uv sync --active --no-cache; \
+    fi
 
 COPY artexplainer artexplainer
-RUN cd artexplainer && uv sync --active --no-cache
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        cd artexplainer && uv pip install --no-cache -e .; \
+    else \
+        cd artexplainer && uv sync --active --no-cache; \
+    fi
 
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml
