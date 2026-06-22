@@ -22,19 +22,26 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Pre-install ppc64le wheels from devpi before running uv sync
 # This ensures ppc64le-optimized wheels are used instead of building from source
+# Install whatever versions are available in devpi, uv sync will upgrade/downgrade if needed
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
     uv pip install --no-cache \
         --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
         --extra-index-url https://pypi.org/simple \
         --index-strategy unsafe-best-match \
-        grpcio \
-        grpcio-tools \
-        numpy \
-        pandas \
-        psutil \
-        pyyaml \
-        httptools \
-        uvloop; \
+        --only-binary :all: \
+        grpcio || echo "grpcio wheel not available, will be installed by uv sync"; \
+    uv pip install --no-cache \
+        --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+        --extra-index-url https://pypi.org/simple \
+        --index-strategy unsafe-best-match \
+        --only-binary :all: \
+        grpcio-tools || echo "grpcio-tools wheel not available, will be installed by uv sync"; \
+    uv pip install --no-cache \
+        --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
+        --extra-index-url https://pypi.org/simple \
+        --index-strategy unsafe-best-match \
+        --only-binary :all: \
+        numpy pandas psutil pyyaml httptools uvloop; \
     fi
 
 # Copy storage metadata for editable dependency resolution
