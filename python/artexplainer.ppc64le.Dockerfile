@@ -20,35 +20,31 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN uv venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Pre-install ppc64le wheels from devpi before running uv sync
+# Copy lock files first to extract versions
+COPY storage/pyproject.toml storage/uv.lock storage/
+COPY kserve/pyproject.toml kserve/uv.lock kserve/
+COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
+
+# Pre-install ppc64le wheels from devpi with exact versions from lock files
 # This ensures ppc64le-optimized wheels are used instead of building from source
-# Install whatever versions are available in devpi, uv sync will upgrade/downgrade if needed
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
     uv pip install --no-cache \
         --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
         --extra-index-url https://pypi.org/simple \
         --index-strategy unsafe-best-match \
         --only-binary :all: \
-        grpcio || echo "grpcio wheel not available, will be installed by uv sync"; \
-    uv pip install --no-cache \
-        --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
-        --extra-index-url https://pypi.org/simple \
-        --index-strategy unsafe-best-match \
-        --only-binary :all: \
-        grpcio-tools || echo "grpcio-tools wheel not available, will be installed by uv sync"; \
-    uv pip install --no-cache \
-        --index-url https://wheels.developerfirst.ibm.com/ppc64le/linux \
-        --extra-index-url https://pypi.org/simple \
-        --index-strategy unsafe-best-match \
-        --only-binary :all: \
-        numpy pandas psutil pyyaml httptools uvloop; \
+        grpcio==1.78.1 \
+        grpcio-tools==1.78.1 \
+        numpy==2.2.4 \
+        pandas==2.2.3 \
+        psutil==5.9.8 \
+        pyyaml==6.0.2 \
+        httptools==0.6.4 \
+        uvloop==0.21.0 \
+        || echo "Some wheels not available with exact versions, will be installed by uv sync"; \
     fi
 
-# Copy storage metadata for editable dependency resolution
-COPY storage/pyproject.toml storage/uv.lock storage/
-
 # ------------------ kserve deps ------------------
-COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # uv sync will skip already-installed packages from devpi
 RUN cd kserve && uv sync --active --no-cache
 
@@ -56,7 +52,6 @@ COPY kserve kserve
 RUN cd kserve && uv sync --active --no-cache
 
 # ------------------ artexplainer deps ------------------
-COPY artexplainer/pyproject.toml artexplainer/uv.lock artexplainer/
 # uv sync will skip already-installed packages from devpi
 RUN cd artexplainer && uv sync --active --no-cache
 
