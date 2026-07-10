@@ -30,7 +30,7 @@ COPY kserve/pyproject.toml kserve/uv.lock kserve/
 # then regenerate uv.lock before syncing.
 RUN if [ "$(uname -m)" = "ppc64le" ]; then \
         sed -i \
-            -e '/^index-strategy\s*=.*/a \\' \
+            -e '/^index-strategy\s*=.*/a\' \
             -e '/^index-strategy\s*=.*/a [[tool.uv.index]]' \
             -e '/^index-strategy\s*=.*/a name = "ppc64le-wheels"' \
             -e '/^index-strategy\s*=.*/a url = "https://wheels.developerfirst.ibm.com/ppc64le/linux"' \
