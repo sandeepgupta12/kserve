@@ -5,8 +5,11 @@ ARG VENV_PATH=/prod_venv
 FROM ${BASE_IMAGE} AS builder
 
 # Install all system dependencies first
-RUN apt-get update && apt-get install -y --no-install-recommends python3-dev curl build-essential && apt-get clean && \
+RUN apt-get update && apt-get install -y --no-install-recommends python3-dev curl build-essential && \
+    if [ "$(uname -m)" = "ppc64le" ]; then apt-get install pkg-config libssl-dev -y; fi && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     ln -s /root/.local/bin/uv /usr/local/bin/uv
@@ -19,9 +22,46 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install Python dependencies
 COPY storage/pyproject.toml storage/uv.lock storage/
+
+# On ppc64le: promote transitive deps (pyyaml, google-crc32c) to explicit direct deps so that
+# [tool.uv.sources] is honoured for them (uv ignores sources for transitive-only packages),
+# then append devpi index + sources and regenerate uv.lock.
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        sed -i \
+            -e '/^    "hf-xet/a\    "google-crc32c==1.7.1",' \
+            -e '/^    "hf-xet/a\    "pyyaml==6.0.2",' \
+            storage/pyproject.toml && \
+        printf '%s\n' \
+            '' \
+            '[tool.uv]' \
+            'index-strategy = "unsafe-best-match"' \
+            '' \
+            '[[tool.uv.index]]' \
+            'name = "ppc64le-wheels"' \
+            'url = "https://wheels.developerfirst.ibm.com/ppc64le/linux"' \
+            'explicit = true' \
+            '' \
+            '[tool.uv.sources]' \
+            'pyyaml = { index = "ppc64le-wheels" }' \
+            'google-crc32c = { index = "ppc64le-wheels" }' \
+            'hf-xet = { index = "ppc64le-wheels" }' \
+            >> storage/pyproject.toml && \
+        cd storage && uv lock && \
+        cp uv.lock /tmp/storage_ppc64le_uv.lock && \
+        cp pyproject.toml /tmp/storage_ppc64le_pyproject.toml; \
+    fi
+
 RUN cd storage && uv sync --active --extra confidential --no-cache
 
 COPY storage storage
+# On ppc64le: restore the patched pyproject.toml + uv.lock after COPY overwrites them, then clean up
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+        rm -f storage/pyproject.toml storage/uv.lock && \
+        cp /tmp/storage_ppc64le_pyproject.toml storage/pyproject.toml && \
+        cp /tmp/storage_ppc64le_uv.lock storage/uv.lock && \
+        rm -f /tmp/storage_ppc64le_pyproject.toml /tmp/storage_ppc64le_uv.lock; \
+    fi
+    
 RUN cd storage && uv pip install ".[confidential]" --no-cache
 
 ARG DEBIAN_FRONTEND=noninteractive
